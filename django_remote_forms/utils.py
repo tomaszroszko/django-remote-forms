@@ -1,7 +1,12 @@
+from django.http import QueryDict
+from django.utils.encoding import force_unicode
 from django.utils.functional import Promise
 
 
 def resolve_promise(o):
+    if isinstance(o, QueryDict):
+        o = dict(o)
+
     if isinstance(o, dict):
         for k, v in o.items():
             o[k] = resolve_promise(v)
@@ -17,6 +22,6 @@ def resolve_promise(o):
             except:
                 raise Exception('Unable to resolve lazy object %s' % o)
     elif callable(o):
-            o = o()
+        o = o()
 
     return o
